@@ -8,7 +8,7 @@ const addUser = (body) => {
     return userModel.findOneAndUpdate(query, doc, {
         upsert: true,
         new: true
-    });
+    }); 
 };
 const updateUser = (body) => {
     const query = {_id: body._id};
@@ -16,7 +16,7 @@ const updateUser = (body) => {
         new: true
     });
 };
-const dleteUser = (filter) => {
+const deleteUser = (filter) => {
    return userModel.deleteOne(filter);
 };
 const getAlluser = (filter) => {
@@ -28,5 +28,8 @@ const getUser = (filter) => {
 
 module.exports = {
     addUser,
-    updateUser
-}
+    updateUser,
+    getUser,
+    getAlluser,
+    deleteUser
+};
