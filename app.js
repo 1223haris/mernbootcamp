@@ -4,13 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
-// var indexRouter = require('./routes/index');
+const passport = require('passport');
+const {straegy, Strategy } = require('passport-local');
 const {
   usersRoutes,
   adminRoutes,
   clientRoutes
 
 } = require('./routes');
+const authMiddleware = require ('./middlewares/authMiddleware');
+const { session } = require('passport');
 
 var app = express();
 mongoose.connect('mongodb://127.0.0.1:27017/my-db',(err) =>{
@@ -31,6 +34,25 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+passport.use(new Strategy(
+  (username,passord, done) => {
+    authMiddleware.executeLogin(username, passord, done);
+  }
+));
+//actual routes
+app.post ('/signup', authMiddleware.userSignup);
+app.post ('/login',
+passport.initialize( ),
+passport.authenticate('local', {
+  session: false,
+  scope: []
+
+}),
+authMiddleware.generateToken,
+authMiddleware.respond
+
+);
+//test Routs
 // app.use('/', indexRouter);
 app.use('/users', usersRoutes);
 app.use('/admin', adminRoutes);
