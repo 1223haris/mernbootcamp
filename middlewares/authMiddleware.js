@@ -1,10 +1,10 @@
 const { sign, verify} = require ('jsonwebtoken');
 const { signup } = require('../beans/common');
-const { userControllers } = require('../controllers');
+const { usersController,adminController } = require('../controllers');
 const executeLogin = async (username,password,cb) => {
     try {
         const filter = {userName: username, password: password};
-        const user = await userControllers.getUser(filter);
+        const user = await usersController.getUser(filter);
         if (!user) {
             return cb(null,false);
         }
@@ -26,10 +26,22 @@ const generateToken = async (req, res, next) =>{
     next();
 };
 const respond = async (req, res, next) =>{
+    //if public information is available then use these comments lines otherwise use populate method
     const user = req.user;
+  const userType = user.userType.kind;
+  const item = user.userType.item;
+  let data=null;
+  if(userType === 'admin') {
+    data=adminController.getAdmin({_id:item});
+  }
+  if(userType === 'client'){
+    data=clientController.getClient({_id:item});
+  }
+
     const result = {token: req.token,user: user. userType.item };
     res.status(200).send(result);
 }
+
 
 const userSignup = async ( req, res, next) => {
     const body = req.body;

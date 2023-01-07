@@ -1,4 +1,4 @@
-const adminModel = require('../models/admin');
+const { adminModel } = require('../models');
 
 const addAdmin = (body) => {
     const doc = new adminModel(body);
